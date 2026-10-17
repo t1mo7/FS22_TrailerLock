@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="72">
     <author>Timo</author>
-    <version>1.0.1.0</version>
+    <version>1.0.2.0</version>
     <title>
         <en>Trailer Lock</en>
-        <de>Anhänger-Sperre</de>
-        <nl>Aanhanger Vergrendeling</nl>
     </title>
     <description>
         <en><![CDATA[Lock the joints of double trailers so they stay straight, making it possible to reverse with a dolly or a turntable drawbar trailer.
@@ -16,9 +14,6 @@ What gets locked (only the side-to-side turning, trailers can still follow bumps
 - the turntable (front axle) of drawbar trailers
 - dolly -> trailer and trailer -> trailer connections
 The hitch on your tractor always stays free.]]></en>
-        <nl><![CDATA[Vergrendel de scharnierpunten van dubbele aanhangers zodat ze recht blijven, zodat je achteruit kunt rijden met een dolly of draaischamel-aanhanger.
-
-Druk ALT + L tijdens het rijden om te vergrendelen / ontgrendelen.]]></nl>
     </description>
     <iconFilename>icon_trailerLock.dds</iconFilename>
     <multiplayer supported="true"/>
@@ -41,8 +36,6 @@ Druk ALT + L tijdens het rijden om te vergrendelen / ontgrendelen.]]></nl>
     <l10n>
         <text name="input_TRAILER_LOCK_TOGGLE">
             <en>Lock / unlock trailer joints</en>
-            <de>Anhängergelenke sperren / entsperren</de>
-            <nl>Aanhangerscharnieren vergrendelen / ontgrendelen</nl>
         </text>
     </l10n>
 </modDesc>
