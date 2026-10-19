@@ -6,6 +6,8 @@
 TrailerLock = {}
 TrailerLock.YAW_AXIS = 2 -- 1 = X, 2 = Y, 3 = Z
 TrailerLock.CLEANUP_INTERVAL = 1000
+TrailerLock.MIN_TURNTABLE_YAW = math.rad(5)
+TrailerLock.MOD_NAME = g_currentModName
 
 -- vehicles whose component joints are locked (server only), so we can unlock them after detaching
 TrailerLock.lockedComponentVehicles = {}
@@ -28,13 +30,20 @@ end
 -- Turntable joints (component joints inside one trailer)
 ----------------------------------------------------------------------
 
--- A turntable joint only rotates around Y (same detection as AutoDrive uses)
+-- A turntable joint mainly rotates around Y. Many trailers also allow a little X / Z tilt for bumps,
+-- so only require the Y limit to be clearly the largest one.
 local function isTurntableJoint(joint)
     if joint.trailerLockBackup ~= nil then
         return true
     end
     local rotLimit = joint.rotLimit
-    return rotLimit ~= nil and rotLimit[1] == 0 and rotLimit[2] ~= 0 and rotLimit[3] == 0
+    if rotLimit == nil or joint.rotMinLimit == nil then
+        return false
+    end
+    local yaw = math.abs(rotLimit[2] or 0)
+    return yaw >= TrailerLock.MIN_TURNTABLE_YAW
+        and math.abs(rotLimit[1] or 0) <= yaw * 0.5
+        and math.abs(rotLimit[3] or 0) <= yaw * 0.5
 end
 
 function TrailerLock:lockComponentJoints(vehicle)
@@ -204,6 +213,7 @@ function TrailerLock:toggle()
 
     if g_server ~= nil then
         local count = self:setLocked(rootVehicle, lock)
+        log("%s: %d joint(s) %s", tostring(rootVehicle:getName()), count, lock and "locked" or "unlocked")
         if lock then
             if count > 0 then
                 notify(string.format("Trailer joints locked (%d)", count), false)
@@ -219,22 +229,24 @@ function TrailerLock:toggle()
     end
 end
 
-function TrailerLock:onToggleAction(actionName, inputValue, callbackState, isAnalog)
-    self:toggle()
-end
-
-local function registerActionEvents(mission)
-    if InputAction.TRAILER_LOCK_TOGGLE == nil then
+-- The hotkey is registered by the trailerLockInput specialization on every enterable vehicle,
+-- because mission-level action events are not active while you sit in a vehicle.
+local function addInputSpecialization(typeManager)
+    if typeManager.typeName ~= "vehicle" then
         return
     end
-    local _, eventId = g_inputBinding:registerActionEvent(InputAction.TRAILER_LOCK_TOGGLE, TrailerLock, TrailerLock.onToggleAction, false, true, false, true)
-    if eventId ~= nil then
-        TrailerLock.actionEventId = eventId
-        g_inputBinding:setActionEventTextVisibility(eventId, false)
+    local specName = TrailerLock.MOD_NAME .. ".trailerLockInput"
+    local numAdded = 0
+    for typeName, typeEntry in pairs(typeManager:getTypes()) do
+        if typeEntry.specializationsByName["enterable"] ~= nil and typeEntry.specializationsByName[specName] == nil then
+            typeManager:addSpecialization(typeName, specName)
+            numAdded = numAdded + 1
+        end
     end
+    log("hotkey added to %d vehicle types", numAdded)
 end
 
-FSBaseMission.registerActionEvents = Utils.appendedFunction(FSBaseMission.registerActionEvents, registerActionEvents)
+TypeManager.finalizeTypes = Utils.prependedFunction(TypeManager.finalizeTypes, addInputSpecialization)
 
 ----------------------------------------------------------------------
 -- Mod event listener

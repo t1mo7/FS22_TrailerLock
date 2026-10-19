@@ -43,6 +43,7 @@ If something doesn't work, open `Documents\My Games\FarmingSimulator2022\log.txt
 - `modDesc.xml`: mod description and key binding
 - `scripts/TrailerLock.lua`: lock / unlock logic, hotkey and on-screen text
 - `scripts/TrailerLockEvent.lua`: multiplayer event
+- `scripts/TrailerLockInput.lua`: registers the ALT + L hotkey on every enterable vehicle
 
 ## Credits
 

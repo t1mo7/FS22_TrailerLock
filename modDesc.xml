@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="72">
     <author>Timo</author>
-    <version>1.0.2.0</version>
+    <version>1.0.3.0</version>
     <title>
         <en>Trailer Lock</en>
     </title>
@@ -22,6 +22,10 @@ The hitch on your tractor always stays free.]]></en>
         <sourceFile filename="scripts/TrailerLockEvent.lua"/>
         <sourceFile filename="scripts/TrailerLock.lua"/>
     </extraSourceFiles>
+
+    <specializations>
+        <specialization name="trailerLockInput" className="TrailerLockInput" filename="scripts/TrailerLockInput.lua"/>
+    </specializations>
 
     <actions>
         <action name="TRAILER_LOCK_TOGGLE" category="VEHICLE"/>
